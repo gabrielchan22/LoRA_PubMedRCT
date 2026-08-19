@@ -2,9 +2,6 @@
 Top-level script: runs the full fine-tune baseline, then the LoRA ablation
 sweep (rank x scaling convention), and assembles everything into one
 comparison table.
-
-Run this in Colab (needs a GPU and Hugging Face Hub access for the model
-and dataset download).
 """
 
 import torch
@@ -17,11 +14,15 @@ from train import train_and_evaluate
 RESULTS = []
 
 
-def run_baseline(device, train_loader, val_loader, test_loader, epochs=3, lr=2e-5):
+def run_baseline(
+    device, train_loader, val_loader, test_loader,
+    epochs=3, lr=2e-5, checkpoint_dir="checkpoints",
+):
     model = build_full_finetune_model()
     result = train_and_evaluate(
         model, train_loader, val_loader, test_loader, device,
         epochs=epochs, lr=lr, run_name="full_finetune", is_lora=False,
+        checkpoint_dir=checkpoint_dir,
     )
     result.update({"method": "full_finetune", "rank": None, "alpha_mode": None})
     RESULTS.append(result)
@@ -34,6 +35,7 @@ def run_lora_sweep(
     alpha_modes=("alpha_over_r", "alpha_over_sqrt_r"),
     epochs=2,
     lr=1e-3,
+    checkpoint_dir="checkpoints",
 ):
     for r in ranks:
         for alpha_mode in alpha_modes:
@@ -42,6 +44,7 @@ def run_lora_sweep(
             result = train_and_evaluate(
                 model, train_loader, val_loader, test_loader, device,
                 epochs=epochs, lr=lr, run_name=run_name, is_lora=True,
+                checkpoint_dir=checkpoint_dir,
             )
             result.update({"method": "lora", "rank": r, "alpha_mode": alpha_mode})
             RESULTS.append(result)
