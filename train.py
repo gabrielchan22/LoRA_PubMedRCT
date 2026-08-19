@@ -6,6 +6,7 @@ set (and learning rate) differs between calls.
 
 import os
 import torch
+from tqdm.auto import tqdm
 from metrics import (
     TrainingRunTracker,
     compute_classification_metrics,
@@ -47,6 +48,7 @@ def train_and_evaluate(
     checkpoint_dir: str = "checkpoints",
     is_lora: bool = False,
     verbose: bool = True,
+    use_amp: bool = True,
 ) -> dict:
     model.to(device)
     optimizer = torch.optim.AdamW(get_trainable_params(model), lr=lr)
@@ -62,20 +64,39 @@ def train_and_evaluate(
     except ImportError:
         scheduler = None
 
+    # Mixed precision only makes sense (and is only supported) on CUDA.
+    amp_enabled = use_amp and device == "cuda"
+    scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled)
+
     tracker = TrainingRunTracker()
     tracker.start()
 
     model.train()
     for epoch in range(epochs):
-        for batch in train_loader:
+        progress = tqdm(
+            train_loader,
+            desc=f"[{run_name}] epoch {epoch + 1}/{epochs}",
+            leave=False,
+            disable=not verbose,
+        )
+        running_loss = 0.0
+        for step, batch in enumerate(progress, start=1):
             batch = {k: v.to(device) for k, v in batch.items()}
-            outputs = model(**batch)
-            loss = outputs.loss
-            loss.backward()
-            optimizer.step()
+            optimizer.zero_grad()
+
+            with torch.amp.autocast("cuda", enabled=amp_enabled):
+                outputs = model(**batch)
+                loss = outputs.loss
+
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             if scheduler is not None:
                 scheduler.step()
-            optimizer.zero_grad()
+
+            running_loss += loss.item()
+            if step % 20 == 0:
+                progress.set_postfix(avg_loss=f"{running_loss / step:.4f}")
 
         val_metrics = evaluate(model, val_loader, device)
         if verbose:
