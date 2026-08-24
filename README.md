@@ -80,3 +80,7 @@ Built and tuned for a single free-tier Colab T4 GPU.
 
 ![Accuracy vs rank](accuracy_vs_rank.png)
 ![Memory vs rank](memory_vs_rank.png)
+
+## Conclusions
+
+Interesting results were seen. Full-finetuning of the Roberta model showed a baseline accuracy of approximately 87.3%. 
