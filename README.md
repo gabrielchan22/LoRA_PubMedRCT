@@ -38,6 +38,8 @@ task for unstructured medical literature (177k train / 29.7k validation /
 | `train.py` | One training loop used by both experiment types |
 | `run_experiments.py` | Orchestrates the baseline run + the rank/scaling ablation sweep, writes `results.csv` |
 | `plots.py` | Accuracy-vs-rank and memory-vs-rank charts from `results.csv` |
+| `accuracy_vs_rank.png` | Accuracy vs. rank graph |
+| `memory_vs_rank.png` | Memory vs. rank graph |
 
 ## The ablation
 
@@ -46,7 +48,7 @@ conventions:
 - `alpha/r` — the original LoRA paper's convention
 - `alpha/√r` — proposed by follow-up work ("rank-stabilized LoRA") as a
   more precise way to hold the adapter's output magnitude constant across
-  ranks (empirically verified in this project's development — see writeup)
+  ranks
 
 ## Key implementation details worth knowing
 
