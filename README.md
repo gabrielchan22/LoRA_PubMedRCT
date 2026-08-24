@@ -64,8 +64,6 @@ Built and tuned for a single free-tier Colab T4 GPU.
 
 ## Results
 
-_Fill in after running `run_experiments.py`:_
-
 | Method | Rank | Alpha mode | Accuracy | Macro F1 | Wall-clock (s) | Peak memory (MB) | Checkpoint size (MB) | Trainable % |
 |---|---|---|---|---|---|---|---|---|
 | Full fine-tune | N/A | N/A | 0.873656 | 0.813971 | 3416.720476 | 4847.559082 | 475.523969 | 100% |
