@@ -33,6 +33,7 @@ task for unstructured medical literature (177k train / 29.7k validation /
 | `accuracy_vs_rank.png` | Accuracy vs. rank graph |
 | `memory_vs_rank.png` | Memory vs. rank graph |
 | `results.csv`| Raw results from `run_experiments.py`|
+| `run_project.ipynb`| Runs the entire project in Google Colab (ideally with T4 GPU for faster performance)|
 
 ## The ablation
 
