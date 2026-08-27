@@ -6,9 +6,7 @@ Dataset: armanc/pubmed-rct20k on the HF Hub (177k train / 29.7k validation
 sentence_id.
 
 NOTE: this file requires network access to huggingface.co to actually run
-(to download the dataset and tokenizer). It's written and structurally
-correct but untested-by-execution in this sandbox, which can't reach HF's
-servers — run it in Colab to verify end to end.
+(to download the dataset and tokenizer). 
 """
 
 from torch.utils.data import DataLoader
