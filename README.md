@@ -81,6 +81,15 @@ Built and tuned for a single free-tier Colab T4 GPU.
 ![Accuracy vs rank](accuracy_vs_rank.png)
 ![Memory vs rank](memory_vs_rank.png)
 
+*Note: the full fine-tune baseline trained on the complete 177k-row training set for 3 epochs; the LoRA runs trained on a 25k-row subsample for 1-2 epochs, for practicality on a single Colab T4 session. Wall-clock and memory figures are each internally comparable within their own row group, but the accuracy gap between LoRA and full fine-tuning is likely somewhat narrower than shown here, since LoRA saw substantially less data.*
+
 ## Conclusions
 
 Interesting results were seen. Full-finetuning of the Roberta model showed a baseline accuracy of approximately 87.3%. 
+LoRA recovers most of full fine-tuning's accuracy at a small fraction of the cost. With the standard alpha/r scaling, every rank tested landed ~3-5 points behind the full fine-tune's 87.37% accuracy (82.09-84.53% across the five ranks), while training only 0.59-2.33% of the model's parameters. However, we can see real practical implications: a 2.8-11.3 MB adapter versus a 475.5 MB full checkpoint (40-170x smaller), and roughly 35% less peak GPU memory. This solidifies the idea of giving up some accuracy for a fraction of the memory size.
+
+We can also see that a higher rank does not necessarily perform better. Among alpha/r runs, r=8 was the best-performing configuration (84.53%), narrowly ahead of r=4 and r=16, with r=64 trailing behind at 82.09% — the worst of the five. More trainable parameters didn't lead to more accuracy here; it likely just gave the adapter more capacity to overfit a 25k-row subsample in one epoch. Further confirmation (with regards to this experimentation setup) would reqire testing with more data and epochs. 
+
+The alpha/√r results reveal an interesting result. I chose alpha = 2 * r and thus for alpha/r we maintain a constant scaling factor of 2 regardless of rank. This changes for the alpha/√r runs. Applied to alpha/√r instead, this alpha is now not a constant scaling factor, but effectively scales with rank: alpha = 4.0 at r=4, up to 16.0 at r=64. Combined with LoRA's learning rate, that growing scaling term amplifies gradients enough to likely destabilize training — and past some threshold between r=8 and r=16, all three higher-rank runs collapsed identically to predicting one constant class (we can see how accuracy and macro-F1 matches up to six decimal places, for these alpha/√r runs to six, across three independently trained models). Thus, further testing would likely look to examine a rank-independent alpha for alpha/√r runs
+
+In conclusion, I look at this experiment as more of an exploratory and initial playing around with LoRA and PEFT, given constrained computing availability. It helped me understand the underlying theory and architectures, but also exemplified several nuances in training and model performance with regards to model hyperparameters. Furthermore, it cemented the accuracy/efficiency trade-off for PEFT and LoRA and just how useful these ideas can be when scaled up to large (slight accuracy trade-off but much more efficient). 
