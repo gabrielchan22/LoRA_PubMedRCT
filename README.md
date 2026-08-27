@@ -45,7 +45,7 @@ conventions:
 
 ## Key implementation details worth knowing
 
-- **Asymmetric initialization is load-bearing.** `lora_A` is Kaiming-initialized,
+- **Asymmetric initialization.** Similar to the original paper, `lora_A` is Kaiming-initialized,
   `lora_B` is zero-initialized. Zero-initializing both gives zero gradient
   for *both* matrices
 - **Only `query`/`value` are adapted**, matching the original LoRA paper's
