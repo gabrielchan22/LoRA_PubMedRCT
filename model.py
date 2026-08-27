@@ -2,9 +2,7 @@
 Model construction — shared by the full fine-tune and LoRA experiments.
 
 NOTE: like data.py, this needs huggingface.co access to actually download
-roberta-base, which this sandbox can't reach. Written and structurally
-correct; verify against the real model with print(model) once run in
-Colab, per the note in build_lora_model().
+roberta-base.
 """
 
 from transformers import AutoModelForSequenceClassification
