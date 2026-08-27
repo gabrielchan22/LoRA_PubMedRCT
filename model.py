@@ -38,8 +38,6 @@ def build_lora_model(
     # RobertaForSequenceClassification (and BERT-style equivalents) expose
     # the classification head as `model.classifier`. It has no pretrained
     # weights to preserve, so it stays fully trainable regardless of LoRA.
-    # If you swap MODEL_NAME to a different architecture family, confirm
-    # this attribute name still holds via print(model) first.
     for p in model.classifier.parameters():
         p.requires_grad = True
 
