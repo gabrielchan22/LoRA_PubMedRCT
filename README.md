@@ -24,7 +24,7 @@ task for unstructured medical literature (177k train / 29.7k validation /
 | File | Purpose |
 |---|---|
 | `lora_layers.py` | `LoRALinear` (the adapter itself) + `inject_lora` (recursively incorporates it into a real model) |
-| `data.py` | Loads and tokenizes PubMed-RCT into PyTorch `DataLoader`s |
+| `data.py` | Loads and tokenizes PubMed-RCT into PyTorch `DataLoader` |
 | `model.py` | Builds the full fine-tune model and the LoRA-injected model |
 | `metrics.py` | Measurements across all models : trainable param count, GPU memory, wall-clock time, checkpoint size, accuracy/macro-F1 |
 | `train.py` | One training loop used by both experiment types |
